@@ -1,7 +1,5 @@
-import {comini} from './util/comini';
 import chromep from 'chrome-promise';
 
-const reciever = comini();
 let state = {volume: 0, muted: false};
 
 chromep.storage.local.get({ volume: 0.2, muted: false }).then(data => {
@@ -9,12 +7,30 @@ chromep.storage.local.get({ volume: 0.2, muted: false }).then(data => {
 	state.muted = data.muted;
 });
 
-reciever.on('getState', (data, res) => {
-	res(state);
-});
+const ports = [];
 
-reciever.on('setState', s => {
-	state.volume = s.volume || state.volume;
-	state.muted = s.muted == void 0 ? state.muted : s.muted;
-	chromep.storage.local.set(s);
-})
+chrome.runtime.onConnect.addListener(function (port) {
+	ports.push(port);
+	console.log(port);
+	port.onMessage.addListener(function (data) {
+		if (data.method === 'getState') {
+			port.postMessage({
+				method: 'setState',
+				state
+			});
+		} else if (data.method === 'setState') {
+			state = Object.assign({...state}, data.state);
+			ports.every( (p, i) => {
+				try {
+					p.postMessage({
+						method: 'setState',
+						state
+					});
+				} catch (e) {
+					ports.splice(i, 1);
+				}
+			})
+			chromep.storage.local.set(state);
+		}
+	});
+});

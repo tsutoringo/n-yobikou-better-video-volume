@@ -1,5 +1,3 @@
-import {emit} from '../util/comini';
-
 class BetterVolumeVideo {
 	static videoId = ['#video01', '#movie', '#video-player'];
 	static getVideoElement = () => document.querySelector(BetterVolumeVideo.videoId.join(', '));
@@ -12,18 +10,28 @@ class BetterVolumeVideo {
 		this.video.volume = 0;
 		this.video.volume = 0;
 
-		emit('getState').then(state => {
-			this.video.volume = state.volume;
-			this.video.muted = state.muted;
+		this.port = chrome.runtime.connect();
+		this.port.postMessage({
+			method: 'getState'
+		});
+		this.port.onMessage.addListener(data => {
+			console.log(data);
+			if (data.method == 'setState') {
+				this.video.volume = data.state.volume;
+				this.video.muted = data.state.muted;
+			}
 		});
 		this.video.addEventListener('volumechange', e => this.changeState(e));
 		this.video.addEventListener('click', e => this.changeState(e));
 	}
 
 	changeState () {
-		emit('setState', {
-			volume: this.video.volume,
-			muted: this.video.muted
+		this.port.postMessage({
+			method: 'setState',
+			state: {
+				volume: this.video.volume,
+				muted: this.video.muted
+			}
 		});
 	}
 }
@@ -36,4 +44,4 @@ const ob = setInterval(() => {
 	}
 }, 50);
 
-setTimeout(() => clearInterval(ob), 20 * 1000);
+setTimeout(() => clearInterval(ob), 10 * 1000);
