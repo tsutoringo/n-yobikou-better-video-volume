@@ -1,6 +1,7 @@
 import chromep from 'chrome-promise';
 
 let state = {volume: 0, muted: false};
+let cooltime = false;
 
 chromep.storage.local.get({ volume: 0.2, muted: false }).then(data => {
 	state.volume = data.volume;
@@ -12,6 +13,12 @@ const ports = [];
 chrome.runtime.onConnect.addListener(function (port) {
 	ports.push(port);
 	port.onMessage.addListener(function (data) {
+		if (cooltime) {
+			return;
+		} else {
+			cooltime = true;
+			setTimeout(() => cooltime = false, 10);
+		}
 		if (data.method === 'getState') {
 			port.postMessage({
 				method: 'setState',
