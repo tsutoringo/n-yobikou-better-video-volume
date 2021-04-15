@@ -15,7 +15,6 @@ class BetterVolumeVideo {
 			method: 'getState'
 		});
 		this.port.onMessage.addListener(data => {
-			console.log(data);
 			if (data.method == 'setState') {
 				this.video.volume = data.state.volume;
 				this.video.muted = data.state.muted;

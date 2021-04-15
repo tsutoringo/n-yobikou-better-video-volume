@@ -11,7 +11,6 @@ const ports = [];
 
 chrome.runtime.onConnect.addListener(function (port) {
 	ports.push(port);
-	console.log(port);
 	port.onMessage.addListener(function (data) {
 		if (data.method === 'getState') {
 			port.postMessage({
