@@ -35,6 +35,7 @@ class BetterVolumeVideo {
 	}
 }
 
+// あとからJSで動画要素が付与されるため多少むりやり
 const ob = setInterval(() => {
 	const video = BetterVolumeVideo.getVideoElement();
 	if (video) {
@@ -43,4 +44,5 @@ const ob = setInterval(() => {
 	}
 }, 50);
 
+// 10秒たっても動画が検知されなければ放棄
 setTimeout(() => clearInterval(ob), 10 * 1000);
