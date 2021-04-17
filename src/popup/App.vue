@@ -13,7 +13,7 @@
 				<span class="mute">
 					<label>
 						<input type="checkbox" v-model="muted">
-						<fa-icon v-if="muted" icon="volume-mute" />
+						<fa-icon v-if="muted || volume == 0" icon="volume-mute" />
 						<fa-icon v-else icon="volume-up" />
 					</label>
 				</span>
