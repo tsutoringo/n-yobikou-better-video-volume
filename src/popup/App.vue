@@ -4,11 +4,11 @@
 		</main>
 		<div class="controller">
 			<div class="volume-range">
-				<input type="range" max="1" step="0.000000001" v-model="volume">
+				<input type="range" max="1" step="0.01" v-model="volume">
 			</div>
 			<div class="detail">
 				<span class="vol">
-					音量設定 <input class="vol-num" type="number" max="100" min="0" v-model="volNum">%
+					音量設定 <input class="vol-num" type="number" max="100" step="0.01" min="0" v-model="volNum">%
 				</span>
 				<span class="mute">
 					<label>
@@ -39,7 +39,7 @@ export default {
 				this.volume = Math.min(val / 100, 1);
 			},
 			get () {
-				return this.volume * 100;
+				return (this.volume * 100).toFixed(2);
 			}
 		}
 	},
